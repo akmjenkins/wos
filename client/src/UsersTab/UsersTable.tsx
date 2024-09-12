@@ -15,7 +15,6 @@ type UsersTableProps = {
   users: User[];
   error?: APIError;
   isLoading: boolean;
-  isRefreshing: boolean;
   refetch: () => void;
 } & TablePaginationProps;
 
@@ -23,7 +22,6 @@ export const UsersTable = ({
   users,
   error,
   isLoading,
-  isRefreshing,
   hasNext,
   hasPrevious,
   onNext,
@@ -34,13 +32,13 @@ export const UsersTable = ({
   const hasNextOrPrevious = !!hasNext || !!hasPrevious;
 
   return (
-    <Table.Root variant="surface">
+    <Table.Root layout={"fixed"} variant="surface">
       <Table.Header>
         <Table.Row>
-          <Table.ColumnHeaderCell>User</Table.ColumnHeaderCell>
-          <Table.ColumnHeaderCell>Role</Table.ColumnHeaderCell>
-          <Table.ColumnHeaderCell>Joined</Table.ColumnHeaderCell>
-          <Table.ColumnHeaderCell />
+          <Table.ColumnHeaderCell width={"30%"}>User</Table.ColumnHeaderCell>
+          <Table.ColumnHeaderCell width={"30%"}>Role</Table.ColumnHeaderCell>
+          <Table.ColumnHeaderCell width={"30%"}>Joined</Table.ColumnHeaderCell>
+          <Table.ColumnHeaderCell width={"10%"} />
         </Table.Row>
       </Table.Header>
       <Table.Body>

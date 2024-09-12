@@ -2,11 +2,10 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
 import { Theme } from "@radix-ui/themes";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClientProvider } from "@tanstack/react-query";
 import "@radix-ui/themes/styles.css";
 import { ToastProvider } from "./components/Toast/ToastProvider.tsx";
-
-const queryClient = new QueryClient();
+import { queryClient } from "./api/queryClient.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

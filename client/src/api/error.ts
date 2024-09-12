@@ -3,5 +3,3 @@ export class APIError extends Error {
     super(message || `APIError: ${response.status}`);
   }
 }
-
-export type QueryError = APIError;

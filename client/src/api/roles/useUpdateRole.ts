@@ -1,14 +1,11 @@
-import {
-  QueryClient,
-  useMutation,
-  useQueryClient,
-} from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { fetchAndParse } from "../utils";
 import { getRoleUrl } from "./urls";
 import { Role } from "./types";
 import { roleKeys } from "./keys";
 import { APIError } from "../error";
 import { sortRolesByDefault } from "./utils";
+import { queryClient } from "../queryClient";
 
 export type UpdateRoleParams = {
   id: string;
@@ -17,8 +14,8 @@ export type UpdateRoleParams = {
   isDefault?: boolean;
 };
 
-const updateRoleInCache = (queryClient: QueryClient, updatedRole: Role) => {
-  queryClient.setQueriesData<Role[]>(
+const updateRoleInCache = (updatedRole: Role, client = queryClient) => {
+  client.setQueriesData<Role[]>(
     { queryKey: roleKeys.all, exact: false },
     (data) => {
       if (!data) return;
@@ -26,10 +23,8 @@ const updateRoleInCache = (queryClient: QueryClient, updatedRole: Role) => {
       return sortRolesByDefault(
         data.map((cachedRole) => {
           if (cachedRole.id === updatedRole.id) return updatedRole;
-
           if (!isNewDefaultRole) return cachedRole;
           if (cachedRole.isDefault) return { ...cachedRole, isDefault: false };
-
           return cachedRole;
         })
       );
@@ -50,7 +45,7 @@ export const useUpdateRole = () => {
       }),
     onSuccess: (updateRole) => {
       client.invalidateQueries({ queryKey: roleKeys.all });
-      updateRoleInCache(client, updateRole);
+      updateRoleInCache(updateRole);
     },
   });
 };

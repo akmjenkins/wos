@@ -1,8 +1,4 @@
-import {
-  QueryClient,
-  useMutation,
-  useQueryClient,
-} from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Role } from "./types";
 import { APIError } from "../error";
 import { fetchAndParse } from "../utils";
@@ -10,21 +6,28 @@ import { getRoleUrl } from "./urls";
 import { roleKeys } from "./keys";
 import { userKeys } from "../users/keys";
 
-const removeRoleFromCache = (queryClient: QueryClient, roleId: string) => {
-  queryClient.setQueriesData<Role[]>(
-    { queryKey: roleKeys.all, exact: false },
-    (data) => data?.filter((cachedRole) => cachedRole.id !== roleId)
-  );
-};
+import { removeRoleFromCache } from "./utils";
+import { updateUserInCache } from "../users/utils";
 
 export const useDeleteRole = () => {
   const queryClient = useQueryClient();
   return useMutation<Role, APIError, { id: string }>({
     mutationFn: ({ id }) => fetchAndParse(getRoleUrl(id), { method: "DELETE" }),
     onSuccess: ({ id }) => {
-      removeRoleFromCache(queryClient, id);
+      const defaultRoleId = queryClient
+        .getQueryData<Role[]>(roleKeys.all)
+        ?.find(({ isDefault }) => isDefault)?.id;
+
+      // update users with this role to the default role
+      if (defaultRoleId)
+        updateUserInCache((user) =>
+          user.roleId === id ? { ...user, roleId: defaultRoleId } : user
+        );
+
+      removeRoleFromCache(id);
+
       queryClient.invalidateQueries({ queryKey: roleKeys.all });
-      // when deleting a role, users with that role may be updated
+      // refetch users
       queryClient.invalidateQueries({ queryKey: userKeys.all });
     },
   });

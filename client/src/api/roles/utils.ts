@@ -1,3 +1,5 @@
+import { queryClient } from "../queryClient";
+import { roleKeys } from "./keys";
 import { Role } from "./types";
 
 export const sortRolesByDefault = (roles: Role[]) =>
@@ -6,3 +8,10 @@ export const sortRolesByDefault = (roles: Role[]) =>
     if (b.isDefault) return 1;
     return a.name.localeCompare(b.name);
   });
+
+export const removeRoleFromCache = (roleId: string, client = queryClient) => {
+  client.setQueriesData<Role[]>(
+    { queryKey: roleKeys.all, exact: false },
+    (data) => data?.filter((cachedRole) => cachedRole.id !== roleId)
+  );
+};
