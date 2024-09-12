@@ -8,8 +8,8 @@ const ErrorMessage = ({ children }: { children: React.ReactNode }) => (
 
 type FormFieldProps = {
   children: React.ReactNode;
-  error?: string;
-  label: string;
+  error?: React.ReactNode;
+  label: React.ReactNode;
 };
 
 export const FormField = ({ children, error, label }: FormFieldProps) => {

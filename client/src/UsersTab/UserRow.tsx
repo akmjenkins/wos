@@ -1,21 +1,10 @@
-import {
-  Avatar,
-  DropdownMenu,
-  Flex,
-  IconButton,
-  Table,
-  Text,
-} from "@radix-ui/themes";
+import { Avatar, Flex, Table, Text } from "@radix-ui/themes";
 import { User } from "../api/users/types";
-import { DotsHorizontalIcon } from "@radix-ui/react-icons";
-import { useState } from "react";
-import { DeleteUserDialog } from "./DeleteUserDialog";
-import { RoleLabel } from "./RoleLabel";
-
-const getUserInitials = (user: User) => `${user.first[0]}${user.last[0]}`;
+import { RoleLabel } from "../components/RoleLabel";
+import { UserActionMenu } from "./UserActionMenu";
+import { getUserInitials } from "../api/users/utils";
 
 export const UserRow = ({ user }: { user: User }) => {
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   return (
     <Table.Row align={"center"}>
       <Table.RowHeaderCell>
@@ -41,27 +30,7 @@ export const UserRow = ({ user }: { user: User }) => {
         })}
       </Table.Cell>
       <Table.Cell>
-        <DropdownMenu.Root>
-          <DropdownMenu.Trigger>
-            <IconButton radius="full" color="gray" variant="ghost">
-              <DotsHorizontalIcon />
-            </IconButton>
-          </DropdownMenu.Trigger>
-          <DropdownMenu.Content align="end">
-            <DropdownMenu.Item>Edit User</DropdownMenu.Item>
-            <DropdownMenu.Item
-              onClick={() => setDeleteDialogOpen(true)}
-              color="red"
-            >
-              Delete User
-            </DropdownMenu.Item>
-          </DropdownMenu.Content>
-        </DropdownMenu.Root>
-        <DeleteUserDialog
-          user={user}
-          open={deleteDialogOpen}
-          onClose={() => setDeleteDialogOpen(false)}
-        />
+        <UserActionMenu user={user} />
       </Table.Cell>
     </Table.Row>
   );

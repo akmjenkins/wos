@@ -1,4 +1,4 @@
-import { Spinner } from "@radix-ui/themes";
+import { Spinner, Text } from "@radix-ui/themes";
 import { useFetchAllRoles } from "../api/roles/useFetchAllRoles";
 
 type RoleLabelProps = {
@@ -10,7 +10,9 @@ export const RoleLabel = ({ id }: RoleLabelProps) => {
 
   if (isPending) return <Spinner />;
 
-  if (isError) return <>Failed to fetch roles</>;
+  if (isError) return <Text>Failed to fetch roles</Text>;
 
-  return data.find((role) => role.id === id)?.name ?? "Unknown Role";
+  return (
+    <Text>{data.find((role) => role.id === id)?.name ?? "Unknown Role"}</Text>
+  );
 };

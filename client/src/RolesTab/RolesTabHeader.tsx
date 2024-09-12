@@ -1,16 +1,16 @@
 import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
 import { Button, Flex, TextField } from "@radix-ui/themes";
 import { useState } from "react";
-import { AddUserDialog } from "./AddUserDialog";
+import { AddRoleDialog } from "./AddRoleDialog";
 
-type UsersTabHeaderProps = {
+type RolesTabHeaderProps = {
   onChangeSearchValue: (value: string) => void;
 };
 
-export const UsersTabHeader = ({
+export const RolesTabHeader = ({
   onChangeSearchValue,
-}: UsersTabHeaderProps) => {
-  const [addUserDialogOpen, setAddUserDialogOpen] = useState(false);
+}: RolesTabHeaderProps) => {
+  const [addRoleDialogOpen, setAddRoleDialogOpen] = useState(false);
   return (
     <Flex gap={"2"}>
       <TextField.Root
@@ -22,10 +22,10 @@ export const UsersTabHeader = ({
           <MagnifyingGlassIcon height="16" width="16" />
         </TextField.Slot>
       </TextField.Root>
-      <Button onClick={() => setAddUserDialogOpen(true)}>+ Add user</Button>
-      <AddUserDialog
-        open={addUserDialogOpen}
-        onClose={() => setAddUserDialogOpen(false)}
+      <Button onClick={() => setAddRoleDialogOpen(true)}>+ Add role</Button>
+      <AddRoleDialog
+        open={addRoleDialogOpen}
+        onClose={() => setAddRoleDialogOpen(false)}
       />
     </Flex>
   );

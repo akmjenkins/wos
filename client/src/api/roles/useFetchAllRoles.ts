@@ -4,13 +4,14 @@ import { Role } from "./types";
 import { fetchAndParse } from "../utils";
 import { getRolesListUrl } from "./urls";
 import { roleKeys } from "./keys";
+import { sortRolesByDefault } from "./utils";
 
 export const useFetchAllRoles = () =>
   useQuery({
     queryKey: roleKeys.all,
     queryFn: async () => {
       let page = 1;
-      const results = [];
+      const results: Role[] = [];
       while (page) {
         const response = await fetchAndParse<PaginatedData<Role>>(
           getRolesListUrl({ page })
@@ -19,7 +20,7 @@ export const useFetchAllRoles = () =>
         if (!response.next) break;
         page++;
       }
-      results.sort((a) => (a.isDefault ? -1 : 1));
-      return results;
+
+      return sortRolesByDefault(results);
     },
   });

@@ -9,42 +9,29 @@ import {
   Text,
 } from "@radix-ui/themes";
 import { FormProvider, useForm } from "react-hook-form";
-import { UserForm } from "./UserForm";
-import { CreateUserParams, useCreateUser } from "../api/users/useCreateUser";
 import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
-import { useFetchAllRoles } from "../api/roles/useFetchAllRoles";
-import { useEffect } from "react";
-import { getUserName } from "../api/users/utils";
-import { RoleLabel } from "../components/RoleLabel";
+import { CreateRoleParams, useCreateRole } from "../api/roles/useCreateRole";
+import { RoleForm } from "./RoleForm";
 import { useShowToast } from "../components/Toast/useShowToast";
 
-type AddUserDialogProps = {
+type AddRoleDialogProps = {
   open: boolean;
   onClose: () => void;
 };
 
-export const AddUserDialog = ({ open, onClose }: AddUserDialogProps) => {
-  const { data: roles } = useFetchAllRoles();
-  const { mutateAsync, isError, error, reset, isPending } = useCreateUser();
+export const AddRoleDialog = ({ open, onClose }: AddRoleDialogProps) => {
+  const { mutateAsync, isError, error, reset, isPending } = useCreateRole();
 
-  const form = useForm<CreateUserParams>();
+  const form = useForm<CreateRoleParams>();
   const showToast = useShowToast();
-
-  const defaultRoleId = roles?.find(({ isDefault }) => isDefault)?.id;
-  useEffect(() => {
-    // only set the default value for the roleId if the default role has changed (or been fetched for the first time)
-    // when the dialog is closed. Otherwise we could end up resetting the users fields as they type
-    // resulting in a bad UI state and uncomfortable UX (field values changing out from under people)
-    if (!open) form.reset({ roleId: defaultRoleId });
-  }, [open, form, defaultRoleId]);
 
   return (
     <>
       <Dialog.Root
         onOpenChange={() => {
           if (isPending) return false;
-          onClose();
           reset();
+          onClose();
         }}
         open={open}
       >
@@ -53,13 +40,12 @@ export const AddUserDialog = ({ open, onClose }: AddUserDialogProps) => {
             <form
               onSubmit={form.handleSubmit((values) =>
                 mutateAsync(values, {
-                  onSuccess: (user) => {
+                  onSuccess: (role) => {
                     showToast({
-                      title: "User created",
+                      title: "Role created",
                       description: (
                         <Text>
-                          <Strong>{getUserName(user)}</Strong> created with a
-                          role of <RoleLabel id={user.roleId} />
+                          <Strong>{role.name}</Strong> has been created
                         </Text>
                       ),
                     });
@@ -68,9 +54,9 @@ export const AddUserDialog = ({ open, onClose }: AddUserDialogProps) => {
                 })
               )}
             >
-              <Dialog.Title>Add user</Dialog.Title>
+              <Dialog.Title>Add role</Dialog.Title>
               <Dialog.Description>
-                Create a new user in your organization
+                Creates a new role that can be assigned to users
               </Dialog.Description>
               {isError ? (
                 <Callout.Root mb={"5"} color="red" role="alert">
@@ -78,12 +64,12 @@ export const AddUserDialog = ({ open, onClose }: AddUserDialogProps) => {
                     <ExclamationTriangleIcon />
                   </Callout.Icon>
                   <Callout.Text>
-                    Failed to create user: {error.message}
+                    Failed to create role: {error.message}
                   </Callout.Text>
                 </Callout.Root>
               ) : null}
               <Section size={"1"}>
-                <UserForm />
+                <RoleForm />
               </Section>
               <Flex gap="3" justify="end">
                 <Dialog.Close disabled={form.formState.isSubmitting}>
@@ -98,10 +84,10 @@ export const AddUserDialog = ({ open, onClose }: AddUserDialogProps) => {
                 >
                   {form.formState.isSubmitting ? (
                     <>
-                      <Spinner /> Adding user...
+                      <Spinner /> Adding role...
                     </>
                   ) : (
-                    <>Add user</>
+                    <>Add role</>
                   )}
                 </Button>
               </Flex>

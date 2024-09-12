@@ -1,8 +1,15 @@
-import { Flex, Spinner, Table } from "@radix-ui/themes";
+import { Table } from "@radix-ui/themes";
 import { UserRow } from "./UserRow";
 import { User } from "../api/users/types";
 import { APIError } from "../api/error";
-import { TablePagination, TablePaginationProps } from "../TablePagination";
+import {
+  TablePagination,
+  TablePaginationProps,
+} from "../components/TablePagination";
+import { UsersTableEmpty } from "./UsersTableEmpty";
+import { UsersTableLoading } from "./UsersTableLoading";
+import { UsersTableError } from "./UsersTableError";
+import { UsersTableFullRow } from "./UsersTableFullRow";
 
 type UsersTableProps = {
   users: User[];
@@ -23,6 +30,9 @@ export const UsersTable = ({
   onPrevious,
   refetch,
 }: UsersTableProps) => {
+  const isEmpty = !isLoading && !users.length;
+  const hasNextOrPrevious = !!hasNext || !!hasPrevious;
+
   return (
     <Table.Root variant="surface">
       <Table.Header>
@@ -34,29 +44,19 @@ export const UsersTable = ({
         </Table.Row>
       </Table.Header>
       <Table.Body>
-        {isLoading ? (
-          <Table.Row>
-            <Table.Cell colSpan={4}>
-              <Flex
-                style={{ width: "100%", minHeight: "50vh" }}
-                justify={"center"}
-                align={"center"}
-              >
-                <Spinner />
-              </Flex>
-            </Table.Cell>
-          </Table.Row>
-        ) : null}
+        {error ? <UsersTableError onClickRetry={() => refetch()} /> : null}
+        {isEmpty ? <UsersTableEmpty /> : null}
+        {isLoading ? <UsersTableLoading /> : null}
         {users.map((user) => (
           <UserRow key={user.id} user={user} />
         ))}
-        <Table.Row>
-          <Table.Cell colSpan={4}>
+        {hasNextOrPrevious ? (
+          <UsersTableFullRow>
             <TablePagination
               {...{ hasNext, hasPrevious, onNext, onPrevious }}
             />
-          </Table.Cell>
-        </Table.Row>
+          </UsersTableFullRow>
+        ) : null}
       </Table.Body>
     </Table.Root>
   );

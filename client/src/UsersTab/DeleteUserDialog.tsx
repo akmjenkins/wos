@@ -1,8 +1,17 @@
-import { AlertDialog, Button, Callout, Flex, Spinner } from "@radix-ui/themes";
+import {
+  AlertDialog,
+  Button,
+  Callout,
+  Flex,
+  Spinner,
+  Strong,
+  Text,
+} from "@radix-ui/themes";
 import { User } from "../api/users/types";
 import { getUserName } from "../api/users/utils";
 import { useDeleteUser } from "../api/users/useDeleteUser";
 import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
+import { useShowToast } from "../components/Toast/useShowToast";
 
 type DeleteUserDialogProps = {
   open: boolean;
@@ -15,6 +24,7 @@ export const DeleteUserDialog = ({
   onClose,
   user,
 }: DeleteUserDialogProps) => {
+  const showToast = useShowToast();
   const { mutate, isPending, isError, reset } = useDeleteUser();
   return (
     <AlertDialog.Root
@@ -33,14 +43,13 @@ export const DeleteUserDialog = ({
             </Callout.Icon>
             <Callout.Text>
               An error occurred when attempting to delete{" "}
-              <span style={{ fontWeight: 500 }}>{getUserName(user)}</span>.
+              <Strong>{getUserName(user)}</Strong>.
             </Callout.Text>
           </Callout.Root>
         ) : null}
         <AlertDialog.Title>Delete user</AlertDialog.Title>
         <AlertDialog.Description>
-          Are you sure? The user{" "}
-          <span style={{ fontWeight: 500 }}>{getUserName(user)}</span> will be
+          Are you sure? The user <Strong>{getUserName(user)}</Strong> will be
           permanently deleted
         </AlertDialog.Description>
         <Flex gap="3" mt="4" justify="end">
@@ -55,16 +64,32 @@ export const DeleteUserDialog = ({
               disabled={isPending}
               onClick={(e) => {
                 e.preventDefault();
-                mutate({ id: user.id }, { onSuccess: onClose });
+                mutate(
+                  { id: user.id },
+                  {
+                    onSuccess: (user) => {
+                      showToast({
+                        title: "User deleted",
+                        description: (
+                          <Text>
+                            <Strong>{getUserName(user)}</Strong> has been
+                            deleted
+                          </Text>
+                        ),
+                      });
+                      onClose();
+                    },
+                  }
+                );
               }}
               variant="surface"
             >
               {isPending ? (
                 <>
-                  <Spinner /> Deleting User...
+                  <Spinner /> Deleting user...
                 </>
               ) : (
-                <>Delete User</>
+                <>Delete user</>
               )}
             </Button>
           </AlertDialog.Action>

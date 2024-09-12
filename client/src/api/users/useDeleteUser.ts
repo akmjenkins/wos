@@ -10,18 +10,13 @@ import { getUserUrl } from "./urls";
 import { userKeys } from "./keys";
 import { PaginatedData } from "../types";
 
-const removeUserFromCache = (
-  queryClient: QueryClient,
-  userId: string | number
-) => {
+const removeUserFromCache = (queryClient: QueryClient, userId: string) => {
   queryClient.setQueriesData<PaginatedData<User>>(
     { queryKey: userKeys.lists(), exact: false },
     (data) => {
       if (!data) return;
 
-      const itemIndexInPage = data.data.findIndex(
-        (user) => user.id === userId.toString()
-      );
+      const itemIndexInPage = data.data.findIndex((user) => user.id === userId);
 
       if (itemIndexInPage === -1) return data;
 
@@ -35,7 +30,7 @@ const removeUserFromCache = (
 
 export const useDeleteUser = () => {
   const queryClient = useQueryClient();
-  return useMutation<User, APIError, { id: string | number }>({
+  return useMutation<User, APIError, { id: string }>({
     mutationFn: ({ id }) => fetchAndParse(getUserUrl(id), { method: "DELETE" }),
     onSuccess: ({ id }) => {
       removeUserFromCache(queryClient, id);
