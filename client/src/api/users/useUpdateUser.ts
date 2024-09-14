@@ -6,7 +6,7 @@ import { userKeys } from "./keys";
 import { APIError } from "../error";
 import { updateUserInCache } from "./utils";
 
-type UpdateUserParams = {
+export type UpdateUserParams = {
   id: string | number;
   first?: string;
   last?: string;
